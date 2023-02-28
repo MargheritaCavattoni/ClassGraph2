@@ -5,26 +5,26 @@ import numpy as np
 from igraph import *
 
 # First version of the propagation algorithm
-def lp1(max_iteration, data):
+def lp1(max_iteration, data, reads_info):
     for v in range(max_iteration):
         # print("iter" + str(v))
 
         # Nodes at level i-1 send info to their neighbours at level i
         tolabel_count = 0
         for i in range(len(data)):
-            if int(data[i][1]) != 0 and len(data[i][2]) > 0:
-                for k in range(len(data[i][2])):
+            if int(reads_info[i]) != 0 and len(data[i]) > 0:
+                for k in range(len(data[i])):
                     # if the neighbour to be labelled don't have already a label
-                    to_label = int(data[i][2][k][0])
-                    if data[to_label][1] == 0:
+                    to_label = int(data[i][k][0])
+                    if reads_info[to_label] == 0:
                         tolabel_count += 1
                         tmp = []
-                        tl_weight = data[i][2][k][1]
-                        label = data[i][1]
+                        tl_weight = data[i][k][1]
+                        label = reads_info[i]
                         tmp.append(tl_weight)
                         tmp.append(label)
                         data[to_label].append(tmp)
-                data[i][2] = []
+                data[i] = []
 
         #print(tolabel_count)
 
@@ -34,9 +34,9 @@ def lp1(max_iteration, data):
 
         for i in range(len(data)):
             len_line = len(data[i])
-            if len_line > 3:
+            if len_line > 1:
                 possible_labels = []
-                for k in range(3, len_line):
+                for k in range(1, len_line):
                     possible_labels.append(data[i][k])
                 possible_labels = sorted(possible_labels, key=operator.itemgetter(1))
                 summing_list = []
@@ -49,9 +49,9 @@ def lp1(max_iteration, data):
                     else:
                         summing_list.append(possible_labels[j])
                 summing_list = sorted(summing_list, key=operator.itemgetter(0))
-                data[i][1] = summing_list[len(summing_list) - 1][1]
-                for k in range(3, len_line):
-                    del data[i][3]
+                reads_info[i] = summing_list[len(summing_list) - 1][1]
+                for k in range(1, len_line):
+                    del data[i][1]
 
 
 
