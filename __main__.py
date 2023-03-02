@@ -175,12 +175,12 @@ if __name__ == "__main__":
                     index_r2 = index
                     bool_idx2 = True
                     add_to_dicts(read2_id, index)
-                if bool_idx1 == True:
+                if bool_idx1:
                     bool_idx1 = False
                     in_dict_1 = int(index_r1)
                 else:
                     in_dict_1 = int(inv_read_dict[read1_id])
-                if bool_idx2 == True:
+                if bool_idx2:
                     bool_idx2 = False
                     in_dict_2 = int(index_r2)
                 else:
