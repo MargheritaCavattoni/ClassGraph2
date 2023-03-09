@@ -5,7 +5,7 @@ from igraph import *
 from labprop.LabelPropagation import lp1
 import time
 from multiprocessing import Pool
-from numba import jit
+#from numba import njit
 import numpy as np
 import networkx as nx
 
@@ -50,8 +50,8 @@ if __name__ == "__main__":
                     help="Type 1 if the reads are paired, type 2 if reads are single-end[default 1]")
     ap.add_argument("--assembler", required=False, type=int, default=1,
                     help="Type 1 if the assembler is sga, type 2 if is minimap2")
-    ap.add_argument("--beta", required=False, type=float, default=0,
-                    help="Choose the value of Beta between 0 and 1 ( 1 excluded )")
+    #ap.add_argument("--beta", required=False, type=float, default=0,
+    #                help="Choose the value of Beta between 0 and 1 ( 1 excluded )")
 
     args = vars(ap.parse_args())
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     #labprop_v = args["lp_version"]
     read_type = args["read_type"]
     assembler = args["assembler"]
-    beta = args["beta"]
+    #beta = args["beta"]
 
 
     # Setup output path for log file
@@ -82,11 +82,11 @@ if __name__ == "__main__":
     logger.info("Final binning output file: " + output_path)
     logger.info("Maximum number of iterations: " + str(max_iteration))
     #logger.info("Label propagation v" + str(labprop_v))
-    logger.info("Beta = " + str(beta))
-    if beta > 1:
-        logger.error("The value of beta must be in the interval [0,1]")
-        logger.info("Exiting ClassGraph... Bye...!")
-        sys.exit(1)
+    # logger.info("Beta = " + str(beta))
+    # if beta > 1:
+    #     logger.error("The value of beta must be in the interval [0,1]")
+    #     logger.info("Exiting ClassGraph... Bye...!")
+    #     sys.exit(1)
     logger.info("ReadGraph started")
 
     # Get the number of bins from the initial binning result
@@ -111,7 +111,6 @@ if __name__ == "__main__":
     def add_to_dicts(read_id):
         read_dict[index] = read_id
         inv_read_dict[read_id] = index
-
 
     def compute_normalize_overlap_len(assembler, line, max_seq_len):
         if assembler == 1:
@@ -251,7 +250,27 @@ if __name__ == "__main__":
 
     data = []
     LabbeledVertices = []
-    
+    reads_info = np.array(reads_info, dtype=np.uint32)
+
+    # Label Delition
+    to_elim = []
+    for read in range(index +1):
+        neighbours = reads_graph.neighbors(read)
+        n = {}
+        lab_reads = 0        
+        for v in neighbours: 
+            if reads_info[v] != 0:
+                n[reads_info[v]] = 1 + n.get(reads_info[v], 0)
+                lab_reads+=1
+
+        coherent_lab =reads_info[read]
+        if coherent_lab < lab_reads/2:
+            to_elim.append(read)
+            
+    for read in to_elim: 
+        reads_info[read] = 0
+
+
     for read in range(index + 1):
 
         neighbours = reads_graph.neighbors(read)
@@ -271,11 +290,9 @@ if __name__ == "__main__":
             data.append(neighs_numpy)
         
 
-    reads_info = np.array(reads_info, dtype=np.uint32)
-
     try:
 
-        logger.info("Starting label propagation, Beta = " + str(beta) )
+        logger.info("Starting label propagation")
         lp1(max_iteration, data, reads_info)
        
     except:

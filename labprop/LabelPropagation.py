@@ -1,10 +1,11 @@
 from igraph import *
-from numba import njit
+#from numba import jit, prange
 import operator
 import numpy as np
 from igraph import *
 
-def send_info(data, reads_info, i, to_label_dict = {}):
+
+def send_info(data, reads_info, i, to_label_dict):
     for k in range(data[i].shape[0]):
         # if the neighbour to be labelled don't have already a label
         to_label = int(data[i][k][0])
