@@ -20,8 +20,8 @@ import networkx as nx
 #                            --assembler 1 sga 2 minimap2
 # -------------------------------------------------------------------
 
-if __name__ == "__main__":
 
+def main():
     # Setup logger
     # -----------------------
 
@@ -294,7 +294,7 @@ if __name__ == "__main__":
 
         logger.info("Starting label propagation")
         lp1(max_iteration, data, reads_info)
-       
+        
     except:
         logger.error("Please make sure that you inserted the correct parameter for the lp version (either 1 or 2)")
         logger.info("Exiting ClassGraph.. Bye...!")
@@ -308,3 +308,6 @@ if __name__ == "__main__":
 
     logger.info("You will find the output here: " + output_file )
     logger.info("***************Label propagation termined**************")
+
+if __name__ == "__main__":
+    main()
