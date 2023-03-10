@@ -1,0 +1,3 @@
+/nfsd/bcb/bcbg/andreace/tools/paftk/CMakeFiles/rebuild_cache.dir
+/nfsd/bcb/bcbg/andreace/tools/paftk/CMakeFiles/edit_cache.dir
+/nfsd/bcb/bcbg/andreace/tools/paftk/CMakeFiles/paftk.dir
