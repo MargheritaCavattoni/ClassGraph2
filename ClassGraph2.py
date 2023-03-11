@@ -112,13 +112,13 @@ def main():
         read_dict[index] = read_id
         inv_read_dict[read_id] = index
 
-    def compute_normalize_overlap_len(assembler, line, max_seq_len):
+    def compute_normalize_overlap_len(assembler, line, max_seq_len = 3000):
         if assembler == 1:
             overlapstart = int(line.split()[3])
             overlapend = int(line.split()[4])
             normalizedoverlaplength = float((overlapend - overlapstart + 1) / max_seq_len)
         else:
-            overlaplen = int(line.split()[11])
+            overlaplen = int(line.split()[7])-int(line.split()[6])
             normalizedoverlaplength = float(overlaplen / max_seq_len)
         return normalizedoverlaplength
 
