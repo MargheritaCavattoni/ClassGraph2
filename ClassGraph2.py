@@ -4,8 +4,6 @@ import sys
 from igraph import *
 from labprop.LabelPropagation import lp1
 import time
-from multiprocessing import Pool
-#from numba import njit
 import numpy as np
 import networkx as nx
 
@@ -44,14 +42,12 @@ def main():
     ap.add_argument("--prefix", required=True, help="prefix for the output file")
     ap.add_argument("--max_iteration", required=False, type=int, default=20,
                     help="maximum number of iterations for label propagation algorithm. [default: 20]")
-    #ap.add_argument("--lp_version", required=False, type=int, default=1,
-    #                help="Type 1 if you want to propagate with lp-v1, type 2 if you prefer to use lp-v2. [default 1]")
     ap.add_argument("--read_type", required=False, type=int, default=1,
                     help="Type 1 if the reads are paired, type 2 if reads are single-end[default 1]")
     ap.add_argument("--assembler", required=False, type=int, default=1,
                     help="Type 1 if the assembler is sga, type 2 if is minimap2")
-    #ap.add_argument("--beta", required=False, type=float, default=0,
-    #                help="Choose the value of Beta between 0 and 1 ( 1 excluded )")
+    ap.add_argument("--label_del", required=False, type=bool, default=False,
+                   help="Choose if you want to apply the label delation")
 
     args = vars(ap.parse_args())
 
@@ -62,10 +58,9 @@ def main():
     output_path = args["output"]
     prefix = args["prefix"]
     max_iteration = args["max_iteration"]
-    #labprop_v = args["lp_version"]
     read_type = args["read_type"]
     assembler = args["assembler"]
-    #beta = args["beta"]
+    label_del = args["label_del"]
 
 
     # Setup output path for log file
@@ -81,12 +76,6 @@ def main():
     logger.info("Existing binning output file: " + kraken2_file)
     logger.info("Final binning output file: " + output_path)
     logger.info("Maximum number of iterations: " + str(max_iteration))
-    #logger.info("Label propagation v" + str(labprop_v))
-    # logger.info("Beta = " + str(beta))
-    # if beta > 1:
-    #     logger.error("The value of beta must be in the interval [0,1]")
-    #     logger.info("Exiting ClassGraph... Bye...!")
-    #     sys.exit(1)
     logger.info("ReadGraph started")
 
     # Get the number of bins from the initial binning result
@@ -253,22 +242,23 @@ def main():
     reads_info = np.array(reads_info, dtype=np.uint32)
 
     # Label Delition
-    to_elim = []
-    for read in range(index +1):
-        neighbours = reads_graph.neighbors(read)
-        n = {}
-        lab_reads = 0        
-        for v in neighbours: 
-            if reads_info[v] != 0:
-                n[reads_info[v]] = 1 + n.get(reads_info[v], 0)
-                lab_reads+=1
+    if label_del:
+        to_elim = []
+        for read in range(index +1):
+            neighbours = reads_graph.neighbors(read)
+            n = {}
+            lab_reads = 0        
+            for v in neighbours: 
+                if reads_info[v] != 0:
+                    n[reads_info[v]] = 1 + n.get(reads_info[v], 0)
+                    lab_reads+=1
 
-        coherent_lab =reads_info[read]
-        if coherent_lab < lab_reads/2:
-            to_elim.append(read)
-            
-    for read in to_elim: 
-        reads_info[read] = 0
+            coherent_lab =reads_info[read]
+            if coherent_lab < lab_reads/2:
+                to_elim.append(read)
+                
+        for read in to_elim: 
+            reads_info[read] = 0
 
 
     for read in range(index + 1):
