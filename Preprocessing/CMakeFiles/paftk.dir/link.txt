@@ -1,1 +1,0 @@
-/usr/lib64/ccache/cc CMakeFiles/paftk.dir/main.c.o -o paftk 
