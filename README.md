@@ -31,8 +31,8 @@ ClassGraph2 requires two input ﬁles: one representing a graph of reads and the
 
 ### Overlap Graph
 The graph must be composed as follows: the nodes represent the reads and the weights of the edges their overlaps. The file must be presented in asqg format.
-One possible tool that satisfies these requirements is [**SGA**](https://github.com/jts/sga) (String Graph Assembler), an assembler based on the overlap-layout-consensus.
-If you are using an assembler that does not use exact overlaps to build the graph, you can modify the asqg format by adding a final column containing the values of the weights you want to assign to the edges (in this case set the option --assembler 2).
+One possible tool that satisfies these requirements is [**SGA**](https://github.com/jts/sga) (String Graph Assembler), an assembler based on the overlap-layout-consensus. For long reads it's possible to utilize [**minimap2**](https://github.com/lh3/minimap2).
+If you are using an assembler that does not use exact overlaps to build the graph, you can modify the asqg format by adding a final column containing the values of the weights you want to assign to the edges (in this case set the option --assembler 2). 
 
 ### Binning Tools
 ClassGraph2 requires as input the result of the classification process presented as follows:
